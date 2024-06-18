@@ -40,4 +40,3 @@ class engine_ud:
             cpu_percent = psutil.cpu_percent(interval=None)  # Get the CPU usage percentage
             memory_percent = psutil.virtual_memory().percent  # Get the memory usage percentage
             yield f'CPU:{cpu_percent}%',f'Mem:{memory_percent}%'
- 

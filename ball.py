@@ -4,16 +4,19 @@ import psutil,time,subprocess,os,sys,threading,webbrowser,clipboard,pystray
 from engine import engine_ud
 from pystray import MenuItem
 from PIL import Image
+
+
 def bar():
     def exit_clicked(icon,item):
             icon.notify('Program Exited')
-            tk.destroy()
             icon.stop()
+            tk.destroy()
+            
     menu = (
             MenuItem('Open', lambda: tk.attributes('-alpha', 1) ),
             MenuItem('exit', lambda icon, item: exit_clicked(icon, item))
             )
-    image = Image.open('img\creeper.png')
+    image = Image.open('creeper.png')
     icon = pystray.Icon("A-Speed ball", image, "A-Speed ball", menu)
     icon.run()
 
@@ -34,8 +37,19 @@ def menu_about():
         label_github.bind("<Button-1>", copy_mail)
         mainloop()
 def menu_open_setting():
-    os.system('setting.exe')
+    def check_status():
+        messagebox.showinfo('Status','Function coming soon, if you want to start this when startup, create a shortcut at AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup and name it "A-Speed ball.lnk" and add the path to the file.')
 
+    top = Toplevel(tk)  # Create a Toplevel widget instead of a new Tk instance
+    check_var = IntVar()
+    top.geometry('400x300')
+    checkbutton = Checkbutton(top, text='Start program on system startup', variable=check_var)
+    checkbutton.pack()
+
+    button = Button(top, text='Check Status', command=check_status)
+    button.pack()
+
+    top.mainloop()
 def GUI():
     global tk
     tk = Tk()
@@ -55,7 +69,7 @@ def GUI():
             
             
     menu2.add_command(label="A-Speed ball Menu")
-    menu2.add_command(label="Setting",command=lambda:menu_open_setting())
+    menu2.add_command(label="Setting",command=menu_open_setting)
     menu2.add_command(label="Free up spaces",command=lambda:messagebox.showinfo('Coming soon','Coming soon'))
     menu2.add_command(label="About",command=menu_about)
     menu2.add_command(label="Hide",command=hide)
