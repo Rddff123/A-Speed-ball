@@ -1,7 +1,7 @@
 from tkinter import messagebox,ttk,Checkbutton, IntVar
 from tkinter import *
 import psutil,time,subprocess,os,sys,threading,webbrowser,clipboard,pystray
-from engine import engine_ud
+from engine import engine_ud,setting,free_space
 from pystray import MenuItem
 from PIL import Image
 
@@ -38,7 +38,16 @@ def menu_about():
         mainloop()
 def menu_open_setting():
     def check_status():
-        messagebox.showinfo('Status','Function coming soon, if you want to start this when startup, create a shortcut at AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup and name it "A-Speed ball.lnk" and add the path to the file.')
+        comfirm = messagebox.askokcancel("Warning","The program will be added to the startup registry key, are you sure to do so?")
+        # Get the current directory of the Python script
+        if comfirm:
+            script_directory = os.path.dirname(os.path.realpath(__file__))
+
+            # Set the file path to the current Python script
+            script_file_path = os.path.join(script_directory, os.path.basename(__file__))
+
+            # Add the Python script to the startup registry key
+            setting.add_to_startup(script_file_path)
 
     top = Toplevel(tk)  # Create a Toplevel widget instead of a new Tk instance
     check_var = IntVar()
@@ -50,6 +59,8 @@ def menu_open_setting():
     button.pack()
 
     top.mainloop()
+def free_temp_space():
+    threading.Thread(target=free_space.clean_space).start()
 def GUI():
     global tk
     tk = Tk()
@@ -70,7 +81,7 @@ def GUI():
             
     menu2.add_command(label="A-Speed ball Menu")
     menu2.add_command(label="Setting",command=menu_open_setting)
-    menu2.add_command(label="Free up spaces",command=lambda:messagebox.showinfo('Coming soon','Coming soon'))
+    menu2.add_command(label="Free up spaces",command=free_temp_space)
     menu2.add_command(label="About",command=menu_about)
     menu2.add_command(label="Hide",command=hide)
     menu2.add_command(label="Exit",command=ball_exit)
