@@ -42,18 +42,30 @@ class engine_ud:
             memory_percent = psutil.virtual_memory().percent  # Get the memory usage percentage
             yield f'CPU:{cpu_percent}%',f'Mem:{memory_percent}%'
 class setting:
-    def add_to_startup(file_path):
+    def add_to_startup(file_path,value):
+        if value == 1:
     # Open the registry key
-        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-                            r"Software\Microsoft\Windows\CurrentVersion\Run",
-                            0, winreg.KEY_ALL_ACCESS)
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                                r"Software\Microsoft\Windows\CurrentVersion\Run",
+                                0, winreg.KEY_ALL_ACCESS)
 
-        # Set the value of the registry key to the Python file path
-        winreg.SetValueEx(key, "MyPythonScript", 0, winreg.REG_SZ, file_path)
+            # Set the value of the registry key to the Python file path
+            winreg.SetValueEx(key, "Aspeedball", 0, winreg.REG_SZ, file_path)
 
-        # Close the registry key
-        winreg.CloseKey(key)
-        messagebox.showinfo("Success", "The program will start automatically when you log in.")
+            # Close the registry key
+            winreg.CloseKey(key)
+            messagebox.showinfo("Success", "The program will start automatically when you log in.")
+        else:
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                                r"Software\Microsoft\Windows\CurrentVersion\Run",
+                                0, winreg.KEY_ALL_ACCESS)
+
+            # Delete the value of the registry key
+            winreg.DeleteValue(key, "Aspeedball")
+
+            # Close the registry key
+            winreg.CloseKey(key)
+            messagebox.showinfo("Success", "The program will not start automatically when you log in.")
 class free_space:
     global username
     username = getpass.getuser()
@@ -84,7 +96,51 @@ class free_space:
                     except:
                         continue
 
-        if not_deleted == 0:
-            messagebox.showinfo("Success", "All temporary files have been deleted.")
+        messagebox.showinfo("Success", f"Deleted {len(all_files)} files and {not_deleted} files not deleted.")
+
+
+class tool:      #for toolbox
+    def DisableSearchBoxSuggestions(self,value):
+        if value == 1:
+            key_path = r'Software\Policies\Microsoft\Windows\explorer'
+            value_name = 'DisableSearchBoxSuggestions'
+            value_data = 1
+
+            # Open the registry key
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_WRITE)
+
+            # Set the value
+            winreg.SetValueEx(key, value_name, 0, winreg.REG_DWORD, value_data)
+
+            # Close the key
+            winreg.CloseKey(key)
+            messagebox.showinfo("Success", "Search box internet suggestions have been disabled.")
         else:
-            messagebox.showinfo("Success", f"{not_deleted} temporary files were not deleted due to insufficient permissions.")
+            key_path = r'Software\Policies\Microsoft\Windows\explorer'
+            value_name = 'DisableSearchBoxSuggestions'
+
+            # Open the registry key
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_WRITE)
+
+            # Delete the value
+            winreg.DeleteValue(key, value_name)
+
+            # Close the key
+            winreg.CloseKey(key)
+            messagebox.showinfo("Success", "Search box internet suggestions have been enabled.")
+    def TraditionalRightClickMenu(self,value):
+        if value == 1:
+            key_path = r"HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
+            value_name = None  # This corresponds to /ve in the command
+            value_data = ""  # Empty string value
+
+
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path, 0, winreg.KEY_WRITE)
+            winreg.SetValueEx(key, value_name, 0, winreg.REG_SZ, value_data)
+            winreg.CloseKey(key)
+            print("Registry key added successfully!")
+        else:
+            key_path = r"HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32"
+
+            winreg.DeleteKey(winreg.HKEY_CURRENT_USER, key_path)
+            print("Registry key deleted successfully!")

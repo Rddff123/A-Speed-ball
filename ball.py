@@ -1,16 +1,16 @@
 from tkinter import messagebox,ttk,Checkbutton, IntVar
 from tkinter import *
 import psutil,time,subprocess,os,sys,threading,webbrowser,clipboard,pystray
-from engine import engine_ud,setting,free_space
+from engine import engine_ud,setting,free_space,tool
 from pystray import MenuItem
 from PIL import Image
-
-
-def bar():
-    def exit_clicked(icon,item):
+def exit_clicked(icon,item):
             icon.notify('Program Exited')
             icon.stop()
-            tk.destroy()
+            exit(0)
+
+def bar():
+
             
     menu = (
             MenuItem('Open', lambda: tk.attributes('-alpha', 1) ),
@@ -38,29 +38,48 @@ def menu_about():
         mainloop()
 def menu_open_setting():
     def check_status():
-        comfirm = messagebox.askokcancel("Warning","The program will be added to the startup registry key, are you sure to do so?")
+        comfirm = messagebox.askokcancel("Warning","The program will modify registry, are you sure to do so?")
         # Get the current directory of the Python script
         if comfirm:
             script_directory = os.path.dirname(os.path.realpath(__file__))
 
-            # Set the file path to the current Python script
+                # Set the file path to the current Python script
             script_file_path = os.path.join(script_directory, os.path.basename(__file__))
+            setting.add_to_startup(script_file_path,check_var_1.get())
+    setting_window = Toplevel(tk)  # Create a Toplevel widget instead of a new Tk instance
+    check_var_1 = IntVar()
+    setting_window.geometry('400x300')
+    checkbutton1 = Checkbutton(setting_window, text='Start program on system startup', variable=check_var_1)
+    checkbutton1.pack()
 
-            # Add the Python script to the startup registry key
-            setting.add_to_startup(script_file_path)
-
-    top = Toplevel(tk)  # Create a Toplevel widget instead of a new Tk instance
-    check_var = IntVar()
-    top.geometry('400x300')
-    checkbutton = Checkbutton(top, text='Start program on system startup', variable=check_var)
-    checkbutton.pack()
-
-    button = Button(top, text='Check Status', command=check_status)
+    button = Button(setting_window, text='Check Status', command=check_status)
     button.pack()
 
-    top.mainloop()
+    setting_window.mainloop()
 def free_temp_space():
     threading.Thread(target=free_space.clean_space).start()
+def toolbox():
+    def do_selection():
+        var_1 = check_var_1.get()
+        var_2 = check_var_2.get()
+        tool.DisableSearchBoxSuggestions(var_1)
+        tool.TraditionalRightClickMenu(var_2)
+    toolbox_window = Toplevel(tk)  # Create a Toplevel widget instead of a new Tk instance
+    check_var_1 = IntVar()
+    check_var_2 = IntVar()
+
+    toolbox_window.title("Toolbox")
+    toolbox_window.geometry('600x600')
+    label_about = Label(toolbox_window,text="Toolbox for Windows 10 & 11 only!\n",foreground="red",font=("Arial", 16))
+    label_about.pack()
+
+    checkbutton1 = Checkbutton(toolbox_window, text='[10&11]Disable SearchBox Internet Suggestions', variable=check_var_1)
+    checkbutton1.pack()  
+    checkbutton2 = Checkbutton(toolbox_window, text='[11]Traditional Right Click Menu', variable=check_var_2)
+    checkbutton2.pack()
+    button_comfirm = Button(toolbox_window, text='Clean temp space', command=do_selection)
+    button_comfirm.pack()
+    toolbox_window.mainloop()
 def GUI():
     global tk
     tk = Tk()
@@ -69,22 +88,18 @@ def GUI():
     menu2 = Menu(tearoff=0)
     def hide():
         tk.attributes('-alpha', 0)
-    def ball_exit():
-        tk.destroy()
-        exit(0)
     def update_updownload():
         engines = engine_ud()
         for speed in engines.updownload():
             label_bl.config(text=speed[0])
             label_br.config(text=speed[1])
             
-            
-    menu2.add_command(label="A-Speed ball Menu")
-    menu2.add_command(label="Setting",command=menu_open_setting)
-    menu2.add_command(label="Free up spaces",command=free_temp_space)
+    menu2.add_command(label="Free up spaces",command=free_temp_space) 
+    menu2.add_command(label="Toolbox",command=toolbox)       
+    menu2.add_command(label="Setting",command=menu_open_setting) 
     menu2.add_command(label="About",command=menu_about)
     menu2.add_command(label="Hide",command=hide)
-    menu2.add_command(label="Exit",command=ball_exit)
+    menu2.add_command(label="Exit",command=exit_clicked)
     
     
     def menu_start(event):
