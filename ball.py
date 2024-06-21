@@ -37,8 +37,8 @@ def menu_about():
         label_github.bind("<Button-1>", copy_mail)
         mainloop()
 def menu_open_setting():
-    def check_status():
-        comfirm = messagebox.askokcancel("Warning","The program will modify registry, are you sure to do so?")
+    def check():
+        comfirm = messagebox.askokcancel("Warning","Do you want to add/remove program to startup?")
         # Get the current directory of the Python script
         if comfirm:
             script_directory = os.path.dirname(os.path.realpath(__file__))
@@ -46,13 +46,39 @@ def menu_open_setting():
                 # Set the file path to the current Python script
             script_file_path = os.path.join(script_directory, os.path.basename(__file__))
             setting.add_to_startup(script_file_path,check_var_1.get())
+        
+        color_text = dropdown.get().lower()
+        match color_text:
+            case "rainbow":
+                def do():
+                    for color in setting.rainbow_text():
+                        label_tl.config(foreground=color)
+                        label_tr.config(foreground=color)
+                        label_bl.config(foreground=color)
+                        label_br.config(foreground=color) 
+                threading.Thread(target=do).start()
+            case _:
+                  
+                label_tl.config(foreground=color_text)
+                label_tr.config(foreground=color_text)
+                label_bl.config(foreground=color_text)
+                label_br.config(foreground=color_text)
     setting_window = Toplevel(tk)  # Create a Toplevel widget instead of a new Tk instance
     check_var_1 = IntVar()
-    setting_window.geometry('400x300')
+    setting_window.geometry('600x450')
     checkbutton1 = Checkbutton(setting_window, text='Start program on system startup', variable=check_var_1)
     checkbutton1.pack()
 
-    button = Button(setting_window, text='Check Status', command=check_status)
+    # Change color of the label tr,tl,br,bl
+    label_change_color = Label(setting_window,text="Change color of texts of the ball")
+    label_change_color.pack()
+
+    dropdown = ttk.Combobox(setting_window, values=["Red", "Yellow", "Blue", "Green","Cyan","Orange","purple","Pink","Rainbow"])
+    dropdown.set("Color")
+    dropdown.pack()
+
+
+    button = Button(setting_window, text='Check Status', command=check)
     button.pack()
 
     setting_window.mainloop()
@@ -99,7 +125,7 @@ def GUI():
     menu2.add_command(label="Setting",command=menu_open_setting) 
     menu2.add_command(label="About",command=menu_about)
     menu2.add_command(label="Hide",command=hide)
-    menu2.add_command(label="Exit",command=exit_clicked)
+    menu2.add_command(label="Exit",command=exit)
     
     
     def menu_start(event):
@@ -142,6 +168,8 @@ def GUI():
     #canvas.place(x=0,y=0,width=50,height=50)
     canvas.bind("<ButtonPress-1>", on_canvas_press)
     canvas.bind("<B1-Motion>", on_canvas_motion)
+
+    global label_tl,label_tr,label_bl,label_br
     label_tl = Label(text="CPU:Loading")
     label_tl.place(x=50, y=0, width=75, height=25)
  

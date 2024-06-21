@@ -66,6 +66,34 @@ class setting:
             # Close the registry key
             winreg.CloseKey(key)
             messagebox.showinfo("Success", "The program will not start automatically when you log in.")
+    def rainbow_text():
+        r, g, b = 252, 3, 3
+
+        while True:
+            while g != 252:
+                g += 1
+                yield f"#{r:02X}{g:02X}{b:02X}"
+                time.sleep(0.01)
+            while r != 3:
+                r -= 1
+                yield f"#{r:02X}{g:02X}{b:02X}"
+                time.sleep(0.01)
+            while b != 252:
+                b += 1
+                yield f"#{r:02X}{g:02X}{b:02X}"
+                time.sleep(0.01)
+            while g != 3:
+                g -= 1
+                yield f"#{r:02X}{g:02X}{b:02X}"
+                time.sleep(0.01)
+            while r != 252:
+                r += 1
+                yield f"#{r:02X}{g:02X}{b:02X}"
+                time.sleep(0.01)
+            while b != 3:
+                b -= 1
+                yield f"#{r:02X}{g:02X}{b:02X}"
+                time.sleep(0.01)   
 class free_space:
     global username
     username = getpass.getuser()
