@@ -1,24 +1,39 @@
 from tkinter import messagebox,ttk,Checkbutton, IntVar
 from tkinter import *
-import psutil,time,subprocess,os,sys,threading,webbrowser,clipboard,pystray
+import psutil,time,subprocess,os,sys,threading,webbrowser,clipboard,pystray,json
 from engine import engine_ud,setting,free_space,tool
 from pystray import MenuItem
 from PIL import Image
-def exit_clicked(icon,item):
-            icon.notify('Program Exited')
-            icon.stop()
-            exit(0)
 
-def bar():
+global color_change
+color_change = False
+def read_setting():
 
-            
-    menu = (
-            MenuItem('Open', lambda: tk.attributes('-alpha', 1) ),
-            MenuItem('exit', lambda icon, item: exit_clicked(icon, item))
-            )
-    image = Image.open('creeper.png')
-    icon = pystray.Icon("A-Speed ball", image, "A-Speed ball", menu)
-    icon.run()
+    with open("setting.setting", "r") as f:
+        setting_inf = f.read()
+        setting_inf = json.loads(setting_inf)
+        check_var_1 = setting_inf["PAS"]    
+        text_color = setting_inf["text_color"]  
+        match text_color: 
+            case "rainbow":
+                def do():   
+                    for color in setting.rainbow_text():
+                        if not color_change:
+                            label_tl.config(foreground=color)
+                            label_tr.config(foreground=color)
+                            label_bl.config(foreground=color)
+                            label_br.config(foreground=color) 
+                        else:
+                            break
+                threading.Thread(target=do).start()
+                #Exit the function do
+            case _:
+                label_tl.config(foreground=text_color)
+                label_tr.config(foreground=text_color)
+                label_bl.config(foreground=text_color)
+                label_br.config(foreground=text_color)
+
+
 
 
 def menu_about():
@@ -36,45 +51,62 @@ def menu_about():
         label_github.pack()
         label_github.bind("<Button-1>", copy_mail)
         mainloop()
+
+
+
 def menu_open_setting():
+    global check_var_1
+    with open("setting.setting", "r") as f:
+        setting_inf = f.read()
+        setting_inf = json.loads(setting_inf)
+        check_var_1_default = setting_inf["PAS"] 
     def check():
-        comfirm = messagebox.askokcancel("Warning","Do you want to add/remove program to startup?")
-        # Get the current directory of the Python script
-        if comfirm:
+        if check_var_1_default != check_var_1.get():
+            # Get the current directory of the Python script
             script_directory = os.path.dirname(os.path.realpath(__file__))
 
                 # Set the file path to the current Python script
             script_file_path = os.path.join(script_directory, os.path.basename(__file__))
             setting.add_to_startup(script_file_path,check_var_1.get())
-        
+        global color_change
+        color_change = True
         color_text = dropdown.get().lower()
         match color_text:
             case "rainbow":
                 def do():
+                    color_change = False
                     for color in setting.rainbow_text():
-                        label_tl.config(foreground=color)
-                        label_tr.config(foreground=color)
-                        label_bl.config(foreground=color)
-                        label_br.config(foreground=color) 
+
+                        if not color_change:
+                            print("COLORCHNGE:",color_change)
+                            label_tl.config(foreground=color)
+                            label_tr.config(foreground=color)
+                            label_bl.config(foreground=color)
+                            label_br.config(foreground=color) 
+                        else:
+                            print("BREAK")  
+                            break
                 threading.Thread(target=do).start()
             case _:
-                  
+                messagebox.showinfo("It will fully work after restarting the program","It will fully work after restarting the program")
                 label_tl.config(foreground=color_text)
                 label_tr.config(foreground=color_text)
                 label_bl.config(foreground=color_text)
                 label_br.config(foreground=color_text)
+        with open("setting.setting", "w") as f:
+            setting_inf = {"PAS":check_var_1.get(),"text_color":color_text}
+            f.write(json.dumps(setting_inf))
     setting_window = Toplevel(tk)  # Create a Toplevel widget instead of a new Tk instance
     check_var_1 = IntVar()
     setting_window.geometry('600x450')
     checkbutton1 = Checkbutton(setting_window, text='Start program on system startup', variable=check_var_1)
     checkbutton1.pack()
-
     # Change color of the label tr,tl,br,bl
     label_change_color = Label(setting_window,text="Change color of texts of the ball")
     label_change_color.pack()
 
-    dropdown = ttk.Combobox(setting_window, values=["Red", "Yellow", "Blue", "Green","Cyan","Orange","purple","Pink","Rainbow"])
-    dropdown.set("Color")
+    dropdown = ttk.Combobox(setting_window, values=["Black","Red", "Yellow", "Blue", "Green","Cyan","Orange","Purple","Pink","Rainbow"])
+    dropdown.set("Black")
     dropdown.pack()
 
 
@@ -118,8 +150,7 @@ def GUI():
         engines = engine_ud()
         for speed in engines.updownload():
             label_bl.config(text=speed[0])
-            label_br.config(text=speed[1])
-            
+            label_br.config(text=speed[1])        
     menu2.add_command(label="Free up spaces",command=free_temp_space) 
     menu2.add_command(label="Toolbox",command=toolbox)       
     menu2.add_command(label="Setting",command=menu_open_setting) 
@@ -127,7 +158,22 @@ def GUI():
     menu2.add_command(label="Hide",command=hide)
     menu2.add_command(label="Exit",command=exit)
     
-    
+    def bar():
+
+                
+        menu = (
+                MenuItem('Open', lambda: tk.attributes('-alpha', 1) ),
+                MenuItem('exit', lambda icon, item: exit_clicked(icon, item))
+                )
+        image = Image.open('creeper.png')
+        icon = pystray.Icon("A-Speed ball", image, "A-Speed ball", menu)
+        icon.run()    
+
+    def exit_clicked(icon,item):
+        icon.notify('Program Exited')
+        icon.stop()
+        tk.destroy()
+
     def menu_start(event):
         menu2.post(event.x_root, event.y_root)
     def on_canvas_press(event):
@@ -195,5 +241,6 @@ def GUI():
     threading.Thread(target=update_information).start()
     threading.Thread(target=update_updownload).start()
     threading.Thread(target=bar).start()    
+    read_setting()
     tk.mainloop()
 GUI()
