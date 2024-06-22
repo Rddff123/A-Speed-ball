@@ -21,7 +21,7 @@ A-Speed_ball
 |  
 |------ images  
 |  
-|------code  
+code  
          |  
          |------ball.py  main file  
          |  
