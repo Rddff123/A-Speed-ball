@@ -17,19 +17,19 @@ I am a new hand so don't blame at me (0.0)
 
 ## Structure
 
-A-Speed_ball
-|
-|------ images
-|
-|------code
-         |
-         |------ball.py  main file
-         |
-         |------engine.py for getting CPU and managing setting
-         |
-         |------creeper.png for creeper icon :)
-         |
-         |------setting.setting for storing setting
+A-Speed_ball  
+|  
+|------ images  
+|  
+|------code  
+         |  
+         |------ball.py  main file  
+         |  
+         |------engine.py for getting CPU and managing setting  
+         |  
+         |------creeper.png for creeper icon :)  
+         |  
+         |------setting.setting for storing setting  
 
 #FAQ
 
