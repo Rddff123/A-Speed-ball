@@ -99,6 +99,7 @@ def menu_open_setting():
     setting_window = Toplevel(tk)  # Create a Toplevel widget instead of a new Tk instance
     check_var_1 = IntVar()
     setting_window.geometry('600x450')
+    setting_window.title("Setting")
     checkbutton1 = Checkbutton(setting_window, text='Start program on system startup', variable=check_var_1)
     checkbutton1.pack()
     # Change color of the label tr,tl,br,bl
