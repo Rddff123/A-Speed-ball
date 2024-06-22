@@ -16,7 +16,7 @@ I am a new hand so don't blame at me (0.0)
   - Avoid "Not Responding"
 
 ## Structure
-`
+
 A-Speed_ball
 |
 |------ images
@@ -30,7 +30,7 @@ A-Speed_ball
          |------creeper.png for creeper icon :)
          |
          |------setting.setting for storing setting
-`
+
 #FAQ
 
 ## I don't like orange color!
