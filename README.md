@@ -8,12 +8,12 @@ A program just like a small menu showing CPU percentage, Memory Percentage, Uplo
 I am a new hand so don't blame at me (0.0)
 
 ## How I achieve the function
-1. tkinter
-  1. GUI
-2. psutil
-  1. getting CPU/MEM/UPL/DOW
-3. threading
-  1. Avoid "Not Responding"
+- tkinter
+  - GUI
+- psutil
+  - getting CPU/MEM/UPL/DOW
+- threading
+  - Avoid "Not Responding"
 
 ## Structure
 `
