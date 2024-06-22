@@ -2,8 +2,8 @@
 
 ## What is this?
 A program just like a small menu showing CPU percentage, Memory Percentage, Uploads and Downloads by Python
-![Interface](interface.png)
-![Interface after right click](interface2.png)
+![Interface](Interface.png)
+![Interface after right click](Interface2.png)
 
 I am a new hand so don't blame at me (0.0)
 
